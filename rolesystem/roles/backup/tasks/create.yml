@@ -1,0 +1,7 @@
+---
+- name: Create backup dir if needed
+  ansible.builtin.file:
+    path: "{{ ssldir }}/backups/{{ sans|first }}/{{ item.check }}/{{ time }}/"
+    state: directory
+  with_items: "{{ filesFound.results }}"
+  when: item.matched > 0

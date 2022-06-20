@@ -1,0 +1,4 @@
+---
+- include: check.yml
+- include: create.yml
+- include: move.yml

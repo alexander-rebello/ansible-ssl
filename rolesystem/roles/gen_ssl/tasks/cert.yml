@@ -1,0 +1,5 @@
+---
+- name: Generate certificates
+  ansible.builtin.command:
+    cmd: "openssl req -nodes -new -newkey rsa:4096 -sha256 -keyout {{ ssldir }}/{{ sans|first }}/{{ item }}/{{ item }}.key -out {{ ssldir }}/{{ sans|first }}/{{ item }}/{{ item }}.csr -config  {{ ssldir }}/{{ sans|first }}/{{ item }}/{{ item }}.cfg"
+  loop: "{{ targets }}"

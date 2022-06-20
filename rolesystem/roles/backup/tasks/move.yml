@@ -1,0 +1,6 @@
+---
+- name: Move old files to backup
+  ansible.builtin.shell:
+    cmd: "mv {{ ssldir }}/{{ sans|first }}/{{ item.check }}/* {{ ssldir }}/backups/{{ sans|first }}/{{ item.check }}/{{ time }}/"
+  with_items: "{{ filesFound.results }}"
+  when: item.matched > 0

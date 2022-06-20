@@ -1,0 +1,19 @@
+---
+- name: Generate certificates
+  hosts: gnrt_ssl_crt
+  become: yes
+  become_user: root
+  vars_prompt:
+    - name: ssldir
+      prompt: "What is path to the ssl certificates directory?"
+      private: no
+    - name: sansInput
+      prompt: "Enter all desired sans seperated with a ';'"
+      private: no
+    - name: org
+      prompt: "Witch organisation should be used? (RZ=RZ / everything else=AG)"
+      private: no
+  roles:
+    - init
+    - backup
+    - gen_ssl

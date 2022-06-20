@@ -1,0 +1,8 @@
+---
+- name: Check if backup needs to be made
+  ansible.builtin.find:
+    paths: "{{ ssldir }}/{{ sans|first }}/{{ check }}/"
+  loop_control:
+    loop_var: check
+  register: filesFound
+  loop: "{{ targets }}"

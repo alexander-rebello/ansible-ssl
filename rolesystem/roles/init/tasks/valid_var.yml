@@ -1,0 +1,4 @@
+---
+- name: "Set variables"
+  set_fact:
+    sans: "{{ sansInput.replace(' ', '').split(';') }}"

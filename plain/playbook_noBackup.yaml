@@ -1,0 +1,62 @@
+---
+- name: Generate certificates
+  hosts: gen_ssl
+  become: yes
+  become_user: root
+
+  vars:
+    time: "{{ ansible_date_time.iso8601 }}"
+    targets:
+      - "RZ-KSPW-DBI01"
+      - "RZ-KSPW-DBT01"
+      - "RZ-KSPW-DBT02"
+      - "RZ-KSPW-DBT03"
+      - "RZ-KSPW-DBT04"
+      - "RZ-KSPW-DBT05"
+      - "RZ-KSPW-DBT06"
+      - "RZ-KSPW-DBT07"
+      - "RZ-KSPW-DBT08"
+      - "RZ-KSPW-DBT09"
+      - "RZ-KSPW-DBT10"
+      - "RZ-KSPW-DBX01"
+      - "RZ-KSVW-DBE01"
+      - "RZ-KSVW-DBR01"
+      - "RZ-KSVW-DBR-D01"
+      - "RZ-KSVW-DBV01"
+      - "RZ-KSVW-DBW03"
+      - "RZ-KSVW-DBW04"
+      - "RZ-KSVW-DBW-T01"
+
+  vars_prompt:
+    - name: ssldir
+      prompt: "What is path to the ssl certificates directory?"
+      private: no
+    - name: sansInput
+      prompt: "Enter all desired sans seperated with a ';'"
+      private: no
+    - name: org
+      prompt: "Witch organisation should be used? (RZ=RZ / everything else=AG)"
+      private: no
+
+  tasks:
+    - name: "Set variables"
+      set_fact:
+        sans: "{{ sansInput.replace(' ', '').split(';') }}"
+
+    - name: Create acitve dir if not exists
+      ansible.builtin.file:
+        path: "{{ ssldir }}/{{ sans|first }}/{{ item }}/"
+        state: directory
+      loop: "{{ targets }}"
+
+    - name: Create config
+      ansible.builtin.template:
+        src: "config_template.j2"
+        dest: "{{ ssldir }}/{{ sans|first }}/{{ item }}/{{ item }}.cfg"
+        backup: yes
+      loop: "{{ targets }}"
+
+    - name: Generate certificates
+      ansible.builtin.command:
+        cmd: "openssl req -nodes -new -newkey rsa:4096 -sha256 -keyout {{ ssldir }}/{{ sans|first }}/{{ item }}/{{ item }}.key -out {{ ssldir }}/{{ sans|first }}/{{ item }}/{{ item }}.csr -config  {{ ssldir }}/{{ sans|first }}/{{ item }}/{{ item }}.cfg"
+      loop: "{{ targets }}"

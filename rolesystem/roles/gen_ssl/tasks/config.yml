@@ -1,0 +1,7 @@
+---
+- name: Create config
+  ansible.builtin.template:
+    src: "config.j2"
+    dest: "{{ ssldir }}/{{ sans|first }}/{{ item }}/{{ item }}.cfg"
+    backup: yes
+  loop: "{{ targets }}"
